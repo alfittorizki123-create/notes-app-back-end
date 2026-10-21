@@ -7,4 +7,9 @@ export default [
   { files: ['**/*.js'], languageOptions: { sourceType: 'module' } },
   { languageOptions: { globals: globals.node } },
   pluginJs.configs.recommended,
+  {
+    rules: {
+      'linebreak-style': 'off',
+    },
+  },
 ];
