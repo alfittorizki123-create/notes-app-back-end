@@ -1,0 +1,40 @@
+import fs from 'fs';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+class StorageService {
+  constructor() {
+    this._S3 = new S3Client({
+      region: process.env.AWS_REGION,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      },
+    });
+  }
+
+  async writeFile(file, meta) {
+    const bucket = process.env.AWS_BUCKET_NAME || process.env.AWS_S3_BUCKET;
+    const body = file.buffer || (file.path ? fs.readFileSync(file.path) : undefined);
+    const parameter = new PutObjectCommand({
+      Bucket: bucket,
+      Key: meta.filename,
+      Body: body,
+      ContentType: meta.contentType,
+    });
+
+    await this._S3.send(parameter);
+
+    return this.createPreSignedUrl({
+      bucket,
+      key: meta.filename,
+    });
+  }
+
+  createPreSignedUrl({ bucket, key }) {
+    const command = new GetObjectCommand({ Bucket: bucket, Key: key });
+    return getSignedUrl(this._S3, command, { expiresIn: 3600 });
+  }
+}
+
+export default new StorageService();

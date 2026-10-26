@@ -21,6 +21,8 @@
     "nodemon": "^3.1.14"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1156.0",
+    "@aws-sdk/s3-request-presigner": "^3.1156.0",
     "amqplib": "^2.2.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
